@@ -1,0 +1,11 @@
+[project]
+name = "qualified-business-income-deduction"
+version = "0.1.0"
+description = "Section 199A QBI deduction calculator"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
