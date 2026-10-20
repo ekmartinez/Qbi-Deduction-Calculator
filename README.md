@@ -37,6 +37,7 @@ result = qbi_deduction(
     qbi=600_000,
     w2_wages=100_000,
     ubia=200_000,
+    sstb=False,           # False = QTB (default); set True for an SSTB
 )
 
 print(result.deduction)   # Decimal('50000.00')
@@ -73,6 +74,44 @@ print(result.report())
 | `net_capital_gain` | Net capital gain plus qualified dividends |
 | `tax_year` | Defaults to the latest year in the table |
 
+### SSTB vs. QTB: how to set the `sstb` flag
+
+The calculator does not classify businesses. You decide, and pass the result as
+`sstb=True` or `sstb=False`.
+
+A **qualified trade or business (QTB)** is any trade or business (other than
+being an employee) that is **not** a **specified service trade or business
+(SSTB)**. So there is no separate QTB list: if the business is not on the SSTB
+list, it is a QTB, and `sstb=False` (the default) is correct.
+
+**SSTB fields** (Section 199A(d)(2)): health, law, accounting, actuarial
+science, performing arts, consulting, athletics, financial services, brokerage
+services, investing and investment management, trading, dealing in securities,
+partnership interests or commodities, and any business whose principal asset
+is the reputation or skill of its owners or employees.
+
+**Not SSTBs:** engineering, architecture, manufacturing, retail, construction,
+real estate, restaurants and similar businesses.
+
+The label only matters when taxable income is above the threshold:
+
+| Taxable income | QTB (`sstb=False`) | SSTB (`sstb=True`) |
+|---|---|---|
+| At or below the threshold | 20% of QBI | 20% of QBI (same as a QTB) |
+| Inside the phase-in range | W-2/UBIA limit phases in | QBI, wages and UBIA are first reduced by the applicable percentage, then the limit phases in |
+| Above the range | Lesser of 20% of QBI or the W-2/UBIA limit | $0 |
+
+Examples from the exercises: an attorney or an investment broker is an SSTB
+(`sstb=True`), while an engineer or a technology consultant treated as a
+regular business is a QTB (`sstb=False`).
+
+Two rules can change the classification and are **not** modeled, so apply them
+yourself before choosing the flag: the de minimis rule (not an SSTB if SSTB
+activity is under 10% of gross receipts, or 5% above $25 million) and the
+related-business rule (a business that provides 80% or more of its property or
+services to a commonly owned SSTB is part of that SSTB). See Treas. Reg.
+Sec. 1.199A-5.
+
 ### Filing status codes
 
 | Code | Status |
@@ -108,6 +147,8 @@ threshold amounts:
   least $1,000 of QBI from businesses where they materially participate.
 - Aggregation elections, the trust and estate rules, and cooperative
   (Section 199A(g)) deductions are not modeled.
+- The SSTB de minimis and related-business rules are not modeled. Classify the
+  business first, then set the `sstb` flag.
 
 ## Disclaimer
 
