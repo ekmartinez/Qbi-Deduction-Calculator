@@ -74,6 +74,46 @@ print(result.report())
 | `net_capital_gain` | Net capital gain plus qualified dividends |
 | `tax_year` | Defaults to the latest year in the table |
 
+### Choosing the tax year
+
+By default the calculator uses the **latest year in the `YEARS` table** (2026
+today), so the default changes when you add a new year. For any other year,
+pass `tax_year` as a keyword argument. It works the same way in both functions.
+
+One business:
+
+```python
+result = qbi_deduction(
+    "SNG",
+    taxable_income=500_000,
+    qbi=600_000,
+    w2_wages=100_000,
+    ubia=200_000,
+    sstb=False,
+    tax_year=2024,
+)
+```
+
+Several businesses:
+
+```python
+result = compute_qbi_deduction(
+    "MFJ",
+    380_000,
+    [
+        Business(150_000, w2_wages=40_000, ubia=200_000, name="Shop"),
+        Business(30_000, sstb=True, name="Consulting"),
+    ],
+    tax_year=2024,
+)
+```
+
+The year selects the threshold amounts, the phase-in range and the 2026
+rules. For example, 2024 uses a $191,950 single threshold ($383,900 joint)
+with a $50,000 / $100,000 phase-in range and no $400 minimum deduction. The
+report header shows the year used, so you can confirm it. Years outside 2018
+to 2026 raise a `ValueError` until you add them to `YEARS`.
+
 ### SSTB vs. QTB: how to set the `sstb` flag
 
 The calculator does not classify businesses. You decide, and pass the result as
